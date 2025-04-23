@@ -1,54 +1,280 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Document Similarity</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Similarity Analyser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #222;
-            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #f1f1f1;
+            background-color: #1a1a1a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Roboto Slab', serif;
+            color: #f1f1f1;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .header {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid #2e2e2e;
+            padding-bottom: 1.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #2e2e2e;
+        }
+        
+        .user-info span {
+            color: #aaaaaa;
+        }
+        
+        .file-uploader {
+            background-color: #262626;
+            border: 1px solid #2e2e2e;
+            border-radius: 4px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .file-uploader:hover {
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+        }
+        
+        .file-input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-input-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #2e2e2e;
+            border-radius: 4px;
+            background-color: #1a1a1a;
+            color: #f1f1f1;
+        }
+        
+        button {
+            background-color: #e63946;
+            color: #f1f1f1;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background-color: #ff6b6b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .auth-buttons {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .auth-buttons a {
+            text-decoration: none;
+        }
+        
+        .secondary-btn {
+            background-color: #000000;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #2e2e2e;
+        }
+        
+        .comparison-history {
+            position: fixed;
+            right: 0;
+            top: 0;
             height: 100vh;
+            width: 0;
+            background-color: #000000;
+            border-left: 1px solid #2e2e2e;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .comparison-history.expanded {
+            width: 350px;
+            padding: 20px;
+        }
+        
+        .history-toggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1001;
+        }
+        
+        .history-toggle button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000000;
+        }
+        
+        .history-toggle button:hover {
+            background-color: #2e2e2e;
+        }
+        
+        .history-item {
+            background-color: #262626;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-left: 3px solid #e63946;
+            transition: transform 0.2s ease;
+        }
+        
+        .history-item:hover {
+            transform: translateX(-3px);
+        }
+        
+        .highlight-value {
+            color: #e63946;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        p {
+            line-height: 1.6;
+        }
+        
+        .logo {
+            font-family: 'Roboto Slab', serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            color: #e63946;
+        }
+        
+        .welcome-message {
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card bg-dark">
-                    <div class="card-header bg-black">
-                        <h4 class="mb-0 text-white">Document Similarity</h4>
-                    </div>
-                    <div class="card-body">
-                        {% if session %}
-                        <p class="text-center">Welcome, {{ session.userinfo.name }}!</p>
-                        <form method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <label for="file_1" class="text-white">Upload PDF 1:</label>
-                                <input type="file" class="form-control-file bg-dark text-white" id="file_1" name="file_1" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="file_2" class="text-white">Upload PDF 2:</label>
-                                <input type="file" class="form-control-file bg-dark text-white" id="file_2" name="file_2" required>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-light">Submit</button>
-                                <a href="{{ url_for('logout') }}" class="btn btn-light">Log out</a>
-                            </div>
-                        </form>
-                        {% else %}
-                        <p class="text-center">You need to log in to access this page.</p>
-                        <div class="text-center">
-                            <a href="{{ url_for('login') }}" class="btn btn-light">Log in</a>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-file-contract logo-icon"></i>
+                <h1>Document Similarity Analyser</h1>
+            </div>
+            <div class="user-info">
+                {% if session %}
+                <img src="{{ session.userinfo.picture }}" alt="User profile">
+                <span>{{ session.userinfo.name }}</span>
+                <a href="/logout"><button class="secondary-btn">Logout</button></a>
+                {% else %}
+                <a href="/login"><button>Login</button></a>
+                {% endif %}
             </div>
         </div>
+        
+        {% if session %}
+        <div class="file-uploader">
+            <h2>Document Similarity Analysis</h2>
+            <p class="welcome-message">Upload two PDF documents to analyze their semantic similarity using BERT and TF-IDF algorithms.</p>
+            
+            <form action="/" method="post" enctype="multipart/form-data">
+                <div class="file-input-group">
+                    <label for="file_1">First PDF Document:</label>
+                    <input type="file" id="file_1" name="file_1" accept=".pdf" required>
+                </div>
+                
+                <div class="file-input-group">
+                    <label for="file_2">Second PDF Document:</label>
+                    <input type="file" id="file_2" name="file_2" accept=".pdf" required>
+                </div>
+                
+                <button type="submit">Analyze Similarity</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="file-uploader">
+            <h2>Document Similarity Analyser</h2>
+            <p>Welcome to DocCheck — a smart document comparison tool that analyzes your PDFs by term frequency significance and by the contextual meaning of words.</p>
+            <p>Please login to compare PDF documents and access your analysis history.</p>
+            <div class="auth-buttons">
+                <a href="/login"><button>Login to Continue</button></a>
+            </div>
+        </div>
+        {% endif %}
     </div>
+    
+    <div class="comparison-history">
+        <h3>Analysis History</h3>
+        <p>Your recent document comparisons will appear here after login.</p>
+    </div>
+    
+    <div class="history-toggle">
+        <button onclick="document.querySelector('.comparison-history').classList.toggle('expanded');">
+            <i class="fas fa-history"></i>
+        </button>
+    </div>
+    
+    <script>
+        // Smooth transitions and UI interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const historyButton = document.querySelector('.history-toggle button');
+            const historyPanel = document.querySelector('.comparison-history');
+            
+            historyButton.addEventListener('click', function() {
+                historyPanel.classList.toggle('expanded');
+            });
+        });
+    </script>
 </body>
 </html>

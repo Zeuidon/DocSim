@@ -1,65 +1,317 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Document Similarity Result</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outcome | Document Similarity Analyser</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #222;
-            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #f1f1f1;
+            background-color: #1a1a1a;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Roboto Slab', serif;
+            color: #f1f1f1;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .header {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid #2e2e2e;
+            padding-bottom: 1.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #2e2e2e;
+        }
+        
+        .user-info span {
+            color: #aaaaaa;
+        }
+        
+        .result-card {
+            background-color: #262626;
+            border: 1px solid #2e2e2e;
+            border-radius: 4px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+        }
+        
+        .similarity-metrics {
+            display: flex;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .metric {
+            flex: 1;
+            padding: 1.8rem;
+            background-color: #1a1a1a;
+            border: 1px solid #2e2e2e;
+            border-radius: 4px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .metric:hover {
+            transform: translateY(-3px);
+        }
+        
+        .metric h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #aaaaaa;
+        }
+        
+        button {
+            background-color: #e63946;
+            color: #f1f1f1;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        button:hover {
+            background-color: #ff6b6b;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .secondary-btn {
+            background-color: #000000;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #2e2e2e;
+        }
+        
+        .comparison-history {
+            position: fixed;
+            right: 0;
+            top: 0;
             height: 100vh;
+            width: 0;
+            background-color: #000000;
+            border-left: 1px solid #2e2e2e;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
+            padding: 0;
+        }
+        
+        .comparison-history.expanded {
+            width: 350px;
+            padding: 20px;
+        }
+        
+        .history-toggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1001;
+        }
+        
+        .history-toggle button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000000;
+        }
+        
+        .history-toggle button:hover {
+            background-color: #2e2e2e;
+        }
+        
+        .history-item {
+            background-color: #262626;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border-left: 3px solid #e63946;
+            transition: transform 0.2s ease;
+        }
+        
+        .history-item:hover {
+            transform: translateX(-3px);
+        }
+        
+        .highlight-value {
+            color: #e63946;
+            font-weight: bold;
+            font-size: 2rem;
+            margin: 15px 0;
+            display: block;
+        }
+        
+        .timestamp {
+            color: #aaaaaa;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .logo {
+            font-family: 'Roboto Slab', serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            color: #e63946;
+        }
+        
+        .document-names {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 3px solid #e63946;
+        }
+        
+        .document-names p {
+            margin: 5px 0;
+            color: #aaaaaa;
+        }
+        
+        .document-names strong {
+            color: #f1f1f1;
+        }
+        
+        .separator {
+            height: 1px;
+            background-color: #2e2e2e;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card bg-dark">
-                    <div class="card-header bg-black">
-                        <h4 class="mb-0 text-white">Document Similarity Result</h4>
-                    </div>
-                    <div class="card-body">
-                        {% if session %}
-                        <p class="text-center">Welcome, {{ session.userinfo.name }}!</p>
-                        <pre class="text-center text-white">{{ result }}</pre>
-                        <div class="text-center">
-                            <a href="{{ url_for('logout') }}" class="btn btn-light">Log out</a>
-                        </div>
-                        {% else %}
-                        <p class="text-center">You need to log in to access this page.</p>
-                        <div class="text-center">
-                            <a href="{{ url_for('login') }}" class="btn btn-light">Log in</a>
-                        </div>
-                        {% endif %}
-                    </div>
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-file-contract logo-icon"></i>
+                <h1>Document Similarity Analyser</h1>
+            </div>
+            <div class="user-info">
+                {% if session %}
+                <img src="{{ session.userinfo.picture }}" alt="User profile">
+                <span>{{ session.userinfo.name }}</span>
+                <a href="/logout"><button class="secondary-btn">Logout</button></a>
+                {% else %}
+                <a href="/login"><button>Login</button></a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="result-card">
+            <h2>Analysis Results</h2>
+            
+            <!-- <div class="document-names">
+                <p><strong>Document 1:</strong> {{ file_1_name }}</p>
+                <p><strong>Document 2:</strong> {{ file_2_name }}</p>
+            </div> -->
+            
+            <div class="similarity-metrics">
+                <div class="metric">
+                    <h3>BERT Similarity Score</h3>
+                    <span class="highlight-value">{{ result['Bert similarity'] }}</span>
+                    <p>Semantic meaning comparison using context-aware embeddings</p>
+                </div>
+                
+                <div class="metric">
+                    <h3>TF-IDF Similarity Score</h3>
+                    <span class="highlight-value">{{ result['Tfidf similarity'] }}</span>
+                    <p>Term frequency–inverse document frequency comparison</p>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card bg-dark">
-                    <div class="card-header bg-black">
-                        <h4 class="mb-0 text-white">Comparison History</h4>
-                    </div>
-                    <div class="card-body">
-                        {% if history %}
-                        <ul class="list-group">
-                            {% for item in history %}
-                            <li class="list-group-item bg-dark text-white">
-                                <strong>{{ item.file_1_name }} vs {{ item.file_2_name }}</strong>
-                                <small class="text-muted">{{ item.result }}</small>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                        {% else %}
-                        <p class="text-center">No comparison history found.</p>
-                        {% endif %}
-                    </div>
-                </div>
+            
+            <div class="separator"></div>
+            
+            <div class="actions">
+                <a href="/"><button>Compare New Documents</button></a>
+                <!-- <a href="/export-results"><button class="secondary-btn"><i class="fas fa-download"></i> Export Results</button></a> -->
             </div>
         </div>
     </div>
+    
+    <!-- Collapsible History Panel -->
+    <div class="comparison-history">
+        <h3>Analysis History</h3>
+        {% if history %}
+            {% for item in history|sort(attribute='timestamp', reverse=true) %}
+            <div class="history-item">
+                <div class="timestamp"><i class="far fa-clock"></i> {{ item.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                <p><strong>{{ item.file_1_name }}</strong> vs <strong>{{ item.file_2_name }}</strong></p>
+                <p>BERT: <span class="highlight-value">{{ item.result['Bert similarity'] }}</span></p>
+                <p>TF-IDF: <span class="highlight-value">{{ item.result['Tfidf similarity'] }}</span></p>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No comparison history available.</p>
+        {% endif %}
+    </div>
+    
+    <div class="history-toggle">
+        <button onclick="document.querySelector('.comparison-history').classList.toggle('expanded');">
+            <i class="fas fa-history"></i>
+        </button>
+    </div>
+    
+    <script>
+        // Smooth transitions and UI interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            const historyButton = document.querySelector('.history-toggle button');
+            const historyPanel = document.querySelector('.comparison-history');
+            
+            historyButton.addEventListener('click', function() {
+                historyPanel.classList.toggle('expanded');
+            });
+        });
+    </script>
 </body>
 </html>
